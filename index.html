@@ -1,0 +1,235 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blokie - Hub</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <style>
+        :root {
+            --bg-dark: #0c0c0c; --bg-nav: #1b1b1b; --bg-panel: #141414;
+            --text-main: #ffffff; --text-sub: #b0b0b0;
+            --accent-green: #2ecc71; --accent-gold: #f1c40f; --accent-blue: #3498db;
+            --border: #2a2a2a;
+        }
+
+        body, html { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg-dark); color: var(--text-main); overflow: hidden; height: 100%; }
+        .view { display: none; height: 100%; width: 100%; overflow-y: auto; }
+        .view.active { display: block; }
+
+        /* Login Screen Style */
+        .auth-background { 
+            height: 100vh; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://placehold.co/1920x1080/111/222?text=The+Cathedral'); 
+            background-size: cover; display: flex; justify-content: flex-end; align-items: center; padding-right: 10%; 
+        }
+        .login-card { background: rgba(20, 20, 20, 0.98); padding: 40px; border-radius: 12px; width: 340px; border: 1px solid #333; text-align: center; }
+        .input-group { background: #222; padding: 12px; border-radius: 6px; margin-bottom: 15px; display: flex; align-items: center; border: 1px solid #333; }
+        .input-group input { background: none; border: none; color: white; margin-left: 10px; outline: none; width: 100%; }
+        .login-submit { background: var(--accent-blue); color: white; border: none; width: 100%; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; }
+
+        /* Navigation */
+        nav { background: var(--bg-nav); height: 55px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; }
+        .nav-tabs { display: flex; gap: 5px; height: 100%; align-items: center; }
+        .tab { display: flex; align-items: center; gap: 8px; padding: 0 15px; height: 40px; color: var(--text-sub); font-size: 0.9rem; cursor: pointer; border-radius: 6px; }
+        .tab:hover, .tab.active { background: #252525; color: white; }
+
+        .tab-content { display: none; max-width: 1200px; margin: 30px auto; padding: 0 20px; }
+        .tab-content.active { display: block; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; }
+        .panel { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px; padding: 15px; }
+        .btn-small { background: var(--accent-blue); color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; font-size: 0.8rem; }
+        
+        #canvas-container { width: 100vw; height: 100vh; }
+    </style>
+</head>
+<body onload="initApp()">
+
+    <div id="auth-view" class="view active">
+        <div class="auth-background">
+            <div class="login-card">
+                <h2 style="margin-bottom: 25px; color: var(--accent-green);">BLOKIE</h2>
+                <div id="login-warn" style="color:#ff5e5e; font-size: 0.8rem; margin-bottom: 10px; display:none;">Invalid credentials.</div>
+                <div class="input-group"><i class="fas fa-user"></i><input type="text" placeholder="Username" id="user-input"></div>
+                <div class="input-group"><i class="fas fa-key"></i><input type="password" placeholder="Password" id="pass-input"></div>
+                <button class="login-submit" onclick="handleLogin()">LOGIN</button>
+                <p style="font-size:0.8rem; margin-top: 15px;">New? <a href="#" onclick="handleSignUp()" style="color:var(--accent-blue); text-decoration:none;">Create Account</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div id="home-view" class="view">
+        <nav>
+            <div class="nav-tabs">
+                <div style="font-weight:900; color:var(--accent-green); margin-right:20px; font-size: 1.2rem;">BLOKIE</div>
+                <div class="tab active" onclick="switchTab(this, 'worlds')"><i class="fas fa-globe"></i> Worlds</div>
+                <div class="tab" onclick="switchTab(this, 'players')"><i class="fas fa-users"></i> Players</div>
+                <div class="tab" onclick="switchTab(this, 'avatar')"><i class="fas fa-user"></i> Avatar</div>
+                <div class="tab" onclick="window.open('studio.html', '_blank')"><i class="fas fa-hammer"></i> Studio</div>
+            </div>
+            <div style="display:flex; align-items:center; gap:20px;">
+                <div style="color:var(--accent-gold); font-weight:bold;"><i class="fas fa-cube"></i> <span id="balance">0</span> Bloks</div>
+                <i class="fas fa-sign-out-alt" onclick="location.reload()" style="cursor:pointer; color:var(--text-sub);"></i>
+            </div>
+        </nav>
+
+        <div id="worlds" class="tab-content active">
+            <h2>Featured Worlds</h2>
+            <div class="grid" id="games-list"></div>
+        </div>
+
+        <div id="players" class="tab-content">
+            <div style="display: grid; grid-template-columns: 1fr 350px; gap: 30px;">
+                <div class="panel">
+                    <h3>Search Players</h3>
+                    <div class="input-group"><i class="fas fa-search"></i><input type="text" id="p-search" placeholder="Find users..." onkeyup="searchPlayers()"></div>
+                    <div id="global-players" style="margin-top:20px;"></div>
+                </div>
+                <div class="panel">
+                    <h3><i class="fas fa-heart" style="color:#e74c3c"></i> BlokBuddies</h3>
+                    <div id="buddies-list"></div>
+                </div>
+            </div>
+        </div>
+
+        <div id="avatar" class="tab-content">
+            <h2>Avatar Editor</h2>
+            <div class="panel" style="max-width:300px;">
+                <p>Shirt Color</p>
+                <input type="color" id="shirt-color" value="#3498db" style="width:100%; height:40px; cursor:pointer; border:none;">
+            </div>
+        </div>
+    </div>
+
+    <div id="game-view" class="view">
+        <div id="canvas-container"></div>
+        <button onclick="location.reload()" style="position:absolute; top:20px; left:20px; background:rgba(0,0,0,0.7); color:white; border:none; padding:12px 20px; cursor:pointer; border-radius:8px; font-weight:bold;">LEAVE GAME</button>
+    </div>
+
+    <script>
+        let users = JSON.parse(localStorage.getItem('blokie_db')) || [{user: "Admin", pass: "123", bloks: 500, buddies: []}];
+        let currentUser = null;
+
+        function initApp() { refreshGames(); }
+
+        function showView(id) { document.querySelectorAll('.view').forEach(v => v.classList.remove('active')); document.getElementById(id).classList.add('active'); }
+        
+        function switchTab(el, id) { 
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active')); 
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            el.classList.add('active'); document.getElementById(id).classList.add('active'); 
+            if(id === 'players') searchPlayers();
+        }
+
+        function handleSignUp() {
+            const u = document.getElementById('user-input').value;
+            const p = document.getElementById('pass-input').value;
+            if(u.length < 2) return alert("Username too short");
+            users.push({user: u, pass: p, bloks: 100, buddies: []});
+            localStorage.setItem('blokie_db', JSON.stringify(users));
+            alert("Account created! Login to continue.");
+        }
+
+        function handleLogin() {
+            const u = document.getElementById('user-input').value;
+            const p = document.getElementById('pass-input').value;
+            currentUser = users.find(acc => acc.user === u && acc.pass === p);
+            if (currentUser) {
+                if(!currentUser.buddies) currentUser.buddies = [];
+                document.getElementById('balance').textContent = currentUser.bloks;
+                showView('home-view');
+                renderBuddies();
+            } else { document.getElementById('login-warn').style.display = "block"; }
+        }
+
+        // SOCIAL LOGIC
+        function searchPlayers() {
+            const query = document.getElementById('p-search').value.toLowerCase();
+            const list = document.getElementById('global-players');
+            list.innerHTML = "";
+            users.forEach(u => {
+                if(u.user !== currentUser.user && u.user.toLowerCase().includes(query)) {
+                    const isBuddy = currentUser.buddies.includes(u.user);
+                    const div = document.createElement('div');
+                    div.style = "display:flex; justify-content:space-between; align-items:center; padding:10px; border-bottom:1px solid #2a2a2a;";
+                    div.innerHTML = `<span><i class="fas fa-circle" style="color:var(--accent-green); font-size:0.6rem; margin-right:10px;"></i>${u.user}</span>
+                                     <button class="btn-small" style="background:${isBuddy?'#444':'var(--accent-blue)'}" onclick="${isBuddy?'':`addBuddy('${u.user}')`}">${isBuddy?'Buddies':'Add Buddy'}</button>`;
+                    list.appendChild(div);
+                }
+            });
+        }
+
+        function addBuddy(name) {
+            currentUser.buddies.push(name);
+            const idx = users.findIndex(u => u.user === currentUser.user);
+            users[idx].buddies = currentUser.buddies;
+            localStorage.setItem('blokie_db', JSON.stringify(users));
+            renderBuddies(); searchPlayers();
+        }
+
+        function renderBuddies() {
+            const list = document.getElementById('buddies-list');
+            list.innerHTML = currentUser.buddies.length ? "" : "<p style='color:var(--text-sub); font-size:0.8rem;'>No buddies yet.</p>";
+            currentUser.buddies.forEach(name => {
+                const div = document.createElement('div');
+                div.style = "padding:10px; background:#1a1a1a; margin-bottom:5px; border-radius:5px; font-size:0.9rem;";
+                div.innerHTML = `<i class="fas fa-user-friends" style="margin-right:10px; color:var(--accent-blue)"></i> ${name}`;
+                list.appendChild(div);
+            });
+        }
+
+        // WORLD LOGIC
+        function refreshGames() {
+            const list = document.getElementById('games-list');
+            const published = JSON.parse(localStorage.getItem('blokie_published_games')) || [];
+            list.innerHTML = published.length ? "" : "<p style='color:var(--text-sub)'>The universe is empty. Go to Studio to build something!</p>";
+            published.forEach((game, i) => {
+                const div = document.createElement('div'); div.className = "panel";
+                div.innerHTML = `<img src="${game.thumb}" style="width:100%; height:130px; object-fit:cover; border-radius:6px;">
+                                 <p style="margin:10px 0;"><b>${game.name}</b></p>
+                                 <button class="login-submit" style="background:var(--accent-green)" onclick="joinGame(${i})">JOIN</button>`;
+                list.appendChild(div);
+            });
+        }
+
+        function joinGame(index) {
+            const games = JSON.parse(localStorage.getItem('blokie_published_games'));
+            const map = games[index].blocks;
+            showView('game-view');
+            
+            const scene = new THREE.Scene(); scene.background = new THREE.Color(0x87ceeb);
+            const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
+            renderer.setSize(window.innerWidth, window.innerHeight);
+            document.getElementById('canvas-container').appendChild(renderer.domElement);
+
+            scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+            const ground = new THREE.Mesh(new THREE.PlaneGeometry(100,100), new THREE.MeshStandardMaterial({color: 0x3a9d23}));
+            ground.rotation.x = -Math.PI/2; scene.add(ground);
+
+            map.forEach(b => {
+                const block = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshStandardMaterial({color: b.col}));
+                block.position.set(b.pos.x, b.pos.y, b.pos.z);
+                scene.add(block);
+            });
+
+            const player = new THREE.Mesh(new THREE.BoxGeometry(1, 2, 0.6), new THREE.MeshStandardMaterial({color: document.getElementById('shirt-color').value}));
+            player.position.y = 1; scene.add(player);
+
+            const keys = {};
+            window.onkeydown = e => keys[e.key.toLowerCase()] = true;
+            window.onkeyup = e => keys[e.key.toLowerCase()] = false;
+
+            function animate() {
+                requestAnimationFrame(animate);
+                if(keys['w']) player.position.z -= 0.15; if(keys['s']) player.position.z += 0.15;
+                if(keys['a']) player.position.x -= 0.15; if(keys['d']) player.position.x += 0.15;
+                camera.position.lerp(new THREE.Vector3(player.position.x, player.position.y + 7, player.position.z + 12), 0.1);
+                camera.lookAt(player.position);
+                renderer.render(scene, camera);
+            }
+            animate();
+        }
+    </script>
+</body>
+</html>
