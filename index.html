@@ -3,121 +3,197 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blokie - Hub</title>
+    <title>Blokie - Creative Universe</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
         :root { --bg: #0c0c0c; --nav: #1b1b1b; --panel: #141414; --text: #fff; --sub: #b0b0b0; --green: #2ecc71; --blue: #3498db; --border: #333; }
-        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; height: 100%; }
         
-        /* Modern Nav */
-        nav { background: var(--nav); height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 50px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
-        .nav-tabs { display: flex; gap: 20px; }
-        .tab { color: var(--sub); cursor: pointer; font-weight: 500; font-size: 0.95rem; padding: 10px; border-radius: 5px; transition: 0.2s; }
-        .tab:hover, .tab.active { color: #fff; background: #252525; }
+        .view { display: none; height: 100%; }
+        .view.active { display: block; }
+
+        /* Auth/Cathedral Style */
+        .auth-background { height: 100vh; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://placehold.co/1920x1080/111/222?text=The+Cathedral'); background-size: cover; display: flex; justify-content: flex-end; align-items: center; padding-right: 10%; }
+        .login-card { background: rgba(20, 20, 20, 0.98); padding: 40px; border-radius: 12px; width: 340px; border: 1px solid #333; text-align: center; }
+
+        /* Nav */
+        nav { background: var(--nav); height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 50px; border-bottom: 1px solid var(--border); }
+        .nav-tabs { display: flex; gap: 15px; }
+        .tab { color: var(--sub); cursor: pointer; padding: 10px 15px; border-radius: 5px; font-weight: 500; }
+        .tab.active { color: #fff; background: #252525; }
 
         /* Game Menu Layout */
-        .game-header { width: 100%; height: 250px; background: linear-gradient(to bottom, rgba(0,0,0,0.4), var(--bg)), url('https://placehold.co/1200x400/222/444'); background-size: cover; display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        .play-btn-large { background: var(--green); width: 400px; height: 50px; border: none; border-radius: 8px; color: white; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
-        .play-btn-large:hover { transform: scale(1.02); filter: brightness(1.1); }
+        .game-header { width: 100%; height: 200px; background: #111; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid #333; }
+        .play-btn-large { background: var(--green); width: 350px; height: 55px; border: none; border-radius: 8px; color: white; font-size: 1.4rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
+        .play-btn-large:hover { transform: scale(1.03); filter: brightness(1.1); }
+        
+        .game-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; max-width: 1100px; margin: 20px auto; padding: 20px; }
+        .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 25px; }
+        
+        /* Grid for Discovery */
+        .discovery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; padding: 40px; }
 
-        .game-container { max-width: 1200px; margin: 20px auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; padding: 0 20px; }
-        .info-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 25px; line-height: 1.6; }
-        .screenshot-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; position: relative; }
-        .screenshot-img { width: 100%; height: 350px; object-fit: cover; }
-
-        .view { display: none; }
-        .view.active { display: block; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; padding: 20px; }
+        #canvas-container { width: 100vw; height: 100vh; }
     </style>
 </head>
-<body onload="initHub()">
+<body onload="initApp()">
 
-    <nav>
-        <div class="nav-tabs">
-            <b style="color:var(--green); font-size: 1.4rem; margin-right: 20px;">BLOKIE</b>
-            <div class="tab active" onclick="showView('worlds')">Games</div>
-            <div class="tab" onclick="showView('players')">Players</div>
-            <div class="tab" onclick="window.open('studio.html', '_blank')">Studio</div>
+    <div id="auth-view" class="view active">
+        <div class="auth-background">
+            <div class="login-card">
+                <h1 style="color:var(--green); letter-spacing: 2px;">BLOKIE</h1>
+                <p style="color:var(--sub); font-size: 0.8rem; margin-bottom: 20px;">Enter the Cathedral</p>
+                <input type="text" id="u-in" placeholder="Username" style="width:100%; padding:12px; margin: 10px 0; background:#222; border:1px solid #444; color:white; border-radius: 6px; box-sizing: border-box;">
+                <button class="play-btn-large" style="width:100%; font-size: 1rem;" onclick="handleLogin()">LOGIN & INSTALL</button>
+            </div>
         </div>
-    </nav>
-
-    <div id="worlds" class="view active">
-        <h2 style="padding: 20px 50px;">Featured Games</h2>
-        <div class="grid" id="games-list"></div>
     </div>
 
-    <div id="game-menu" class="view">
-        <div class="game-header">
-            <button class="play-btn-large" onclick="launchGame()"><i class="fas fa-play"></i></button>
+    <div id="hub-view" class="view">
+        <nav>
+            <div class="nav-tabs">
+                <b style="color:var(--green); font-size: 1.2rem; margin-right: 15px;">BLOKIE</b>
+                <div class="tab active" onclick="switchMainTab('worlds')">Games</div>
+                <div class="tab" onclick="switchMainTab('avatar-tab')">Avatar</div>
+                <div class="tab" onclick="window.open('studio.html', '_blank')">Studio</div>
+            </div>
+            <div id="user-display" style="color:var(--sub); font-size: 0.9rem;"></div>
+        </nav>
+
+        <div id="worlds" class="tab-content">
+            <h2 style="margin-left: 40px; margin-top: 30px;">Discover Worlds</h2>
+            <div class="discovery-grid" id="featured-list"></div>
         </div>
-        <div class="game-container">
-            <div class="info-panel">
-                <h2 id="menu-title">Game Title</h2>
-                <p id="menu-desc" style="color:var(--sub)">Quickly, run around in circles! Your life depends on it!</p>
-                <hr style="border:0; border-top:1px solid #333; margin: 20px 0;">
-                <div style="color:var(--sub); font-size: 0.9rem;">
-                    <b>Maps:</b> Happy Home, Sunny Ranch, Sky Tower
+
+        <div id="game-menu" class="tab-content" style="display:none;">
+            <div class="game-header"><button class="play-btn-large" onclick="launchGame()"><i class="fas fa-play"></i> PLAY</button></div>
+            <div class="game-grid">
+                <div class="panel">
+                    <h2 id="m-title" style="margin-top:0;">Game Title</h2>
+                    <p id="m-desc" style="color:var(--sub); line-height: 1.6;">Quickly, run around in circles! Your life depends on it! Explore maps like Happy Home, Sunny Ranch, and Sky Tower.</p>
+                </div>
+                <div class="panel" style="padding:0; overflow:hidden; min-height: 300px;">
+                    <img id="m-thumb" src="" style="width:100%; height:100%; object-fit:cover;">
                 </div>
             </div>
-            <div class="screenshot-panel">
-                <img id="menu-thumb" class="screenshot-img" src="">
+            <center><button onclick="switchMainTab('worlds')" style="background:none; border:none; color:var(--sub); cursor:pointer;">← Back to Games</button></center>
+        </div>
+
+        <div id="avatar-tab" class="tab-content" style="display:none; padding: 40px;">
+            <div class="game-grid">
+                <div class="panel">
+                    <h2>Customizer</h2>
+                    <label>Shirt Color</label>
+                    <input type="color" id="char-shirt" value="#3498db" style="width:100%; height:40px; margin: 10px 0; border:none; cursor:pointer;">
+                    <label>Skin Tone</label>
+                    <input type="color" id="char-skin" value="#ffdbac" style="width:100%; height:40px; margin: 10px 0; border:none; cursor:pointer;">
+                    <button class="play-btn-large" style="width:100%; margin-top: 20px;" onclick="saveAvatar()">SAVE LOOK</button>
+                </div>
+                <div class="panel" style="display:flex; align-items:center; justify-content:center; background:#000;">
+                    <div style="text-align:center;">
+                        <div id="preview-head" style="width:60px; height:60px; background:#ffdbac; margin:0 auto; border-radius:4px;"></div>
+                        <div id="preview-body" style="width:100px; height:120px; background:#3498db; margin:5px auto; border-radius:4px;"></div>
+                    </div>
+                </div>
             </div>
         </div>
-        <center><button onclick="showView('worlds')" style="background:none; border:none; color:var(--sub); cursor:pointer;">Back to Discovery</button></center>
     </div>
 
     <div id="engine-view" class="view">
         <div id="canvas-container"></div>
-        <button onclick="location.reload()" style="position:absolute; top:20px; left:20px; z-index:100; background:rgba(0,0,0,0.7); color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">Leave</button>
+        <button onclick="location.reload()" style="position:absolute; top:20px; left:20px; background:rgba(0,0,0,0.8); color:white; border:none; padding:12px 25px; cursor:pointer; font-weight:bold; border-radius:6px; z-index:100;">LEAVE GAME</button>
     </div>
 
     <script>
+        let deferredPrompt;
+        let currentUser = null;
         let selectedGame = null;
+        let myLook = { shirt: "#3498db", skin: "#ffdbac" };
 
-        function initHub() {
-            const list = document.getElementById('games-list');
+        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
+
+        function initApp() {
+            if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
+            loadGames();
+        }
+
+        async function handleLogin() {
+            const name = document.getElementById('u-in').value || "BlokiePlayer";
+            currentUser = { name: name };
+            document.getElementById('user-display').innerText = `Logged in as: ${name}`;
+            
+            if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
+            
+            document.getElementById('auth-view').classList.remove('active');
+            document.getElementById('hub-view').classList.add('active');
+        }
+
+        function switchMainTab(id) {
+            document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.getElementById(id).style.display = 'block';
+            event.currentTarget.classList.add('active');
+        }
+
+        function loadGames() {
+            const list = document.getElementById('featured-list');
             const games = JSON.parse(localStorage.getItem('blokie_games')) || [];
-            list.innerHTML = "";
-            games.forEach((g, i) => {
+            list.innerHTML = games.length ? "" : "<p style='color:var(--sub)'>The universe is quiet. Use Studio to build!</p>";
+            
+            games.forEach(g => {
                 const d = document.createElement('div');
-                d.className = "info-panel";
+                d.className = "panel";
                 d.style.cursor = "pointer";
-                d.innerHTML = `<img src="${g.thumb}" style="width:100%; height:150px; border-radius:8px; object-fit:cover;"><h3>${g.name}</h3>`;
-                d.onclick = () => openGameMenu(g);
+                d.innerHTML = `<img src="${g.thumb}" style="width:100%; height:160px; border-radius:8px; object-fit:cover;"><h3>${g.name}</h3>`;
+                d.onclick = () => {
+                    selectedGame = g;
+                    document.getElementById('worlds').style.display = 'none';
+                    document.getElementById('game-menu').style.display = 'block';
+                    document.getElementById('m-title').innerText = g.name;
+                    document.getElementById('m-thumb').src = g.thumb;
+                };
                 list.appendChild(d);
             });
         }
 
-        function showView(id) {
-            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById(id).classList.add('active');
-        }
-
-        function openGameMenu(game) {
-            selectedGame = game;
-            document.getElementById('menu-title').innerText = game.name;
-            document.getElementById('menu-thumb').src = game.thumb;
-            showView('game-view'); // This refers to the layout view
-            document.getElementById('game-menu').classList.add('active');
+        function saveAvatar() {
+            myLook.shirt = document.getElementById('char-shirt').value;
+            myLook.skin = document.getElementById('char-skin').value;
+            document.getElementById('preview-head').style.background = myLook.skin;
+            document.getElementById('preview-body').style.background = myLook.shirt;
+            alert("Appearance saved!");
         }
 
         function launchGame() {
-            showView('engine-view');
+            document.getElementById('hub-view').classList.remove('active');
+            document.getElementById('engine-view').classList.add('active');
+            
             const scene = new THREE.Scene(); scene.background = new THREE.Color(0x87ceeb);
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({antialias:true});
+            const renderer = new THREE.WebGLRenderer({ antialias: true });
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.getElementById('canvas-container').appendChild(renderer.domElement);
             
             scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+            
+            // Build Level
             selectedGame.blocks.forEach(b => {
                 const m = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshStandardMaterial({color:b.col}));
                 m.position.set(b.pos.x, b.pos.y, b.pos.z); scene.add(m);
             });
+
+            // Player Model
+            const group = new THREE.Group();
+            const body = new THREE.Mesh(new THREE.BoxGeometry(1,1.2,0.5), new THREE.MeshStandardMaterial({color: myLook.shirt}));
+            const head = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.6,0.6), new THREE.MeshStandardMaterial({color: myLook.skin}));
+            head.position.y = 0.9;
+            group.add(body); group.add(head);
+            group.position.y = 1; scene.add(group);
+
+            camera.position.set(10, 10, 10); camera.lookAt(group.position);
             
-            camera.position.set(0, 10, 20); camera.lookAt(0,0,0);
             function anim() { requestAnimationFrame(anim); renderer.render(scene, camera); }
             anim();
         }
