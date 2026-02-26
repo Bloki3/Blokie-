@@ -1,2 +1,7 @@
-self.addEventListener('install', () => console.log("Service Worker Active"));
-self.addEventListener('fetch', (e) => e.respondWith(fetch(e.request)));
+self.addEventListener('install', (e) => {
+    console.log('Blokie Corporate Service Worker: Active');
+});
+
+self.addEventListener('fetch', (event) => {
+    event.respondWith(fetch(event.request));
+});
