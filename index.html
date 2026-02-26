@@ -8,144 +8,117 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        :root { --bg: #0c0c0c; --nav: #1b1b1b; --panel: #141414; --text: #fff; --sub: #b0b0b0; --green: #2ecc71; --gold: #f1c40f; --blue: #3498db; }
-        body, html { margin: 0; padding: 0; font-family: sans-serif; background: var(--bg); color: var(--text); overflow: hidden; height: 100%; }
-        .view { display: none; height: 100%; width: 100%; overflow-y: auto; }
+        :root { --bg: #0c0c0c; --nav: #1b1b1b; --panel: #141414; --text: #fff; --sub: #b0b0b0; --green: #2ecc71; --blue: #3498db; --border: #333; }
+        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
+        
+        /* Modern Nav */
+        nav { background: var(--nav); height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 50px; border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; }
+        .nav-tabs { display: flex; gap: 20px; }
+        .tab { color: var(--sub); cursor: pointer; font-weight: 500; font-size: 0.95rem; padding: 10px; border-radius: 5px; transition: 0.2s; }
+        .tab:hover, .tab.active { color: #fff; background: #252525; }
+
+        /* Game Menu Layout */
+        .game-header { width: 100%; height: 250px; background: linear-gradient(to bottom, rgba(0,0,0,0.4), var(--bg)), url('https://placehold.co/1200x400/222/444'); background-size: cover; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        .play-btn-large { background: var(--green); width: 400px; height: 50px; border: none; border-radius: 8px; color: white; font-size: 1.5rem; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.2s; }
+        .play-btn-large:hover { transform: scale(1.02); filter: brightness(1.1); }
+
+        .game-container { max-width: 1200px; margin: 20px auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; padding: 0 20px; }
+        .info-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 25px; line-height: 1.6; }
+        .screenshot-panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; position: relative; }
+        .screenshot-img { width: 100%; height: 350px; object-fit: cover; }
+
+        .view { display: none; }
         .view.active { display: block; }
-        .auth-background { height: 100vh; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://placehold.co/1920x1080/111/222?text=The+Cathedral'); background-size: cover; display: flex; justify-content: flex-end; align-items: center; padding-right: 10%; }
-        .login-card { background: rgba(20, 20, 20, 0.98); padding: 40px; border-radius: 12px; width: 340px; border: 1px solid #333; text-align: center; }
-        .input-group { background: #222; padding: 12px; border-radius: 6px; margin-bottom: 15px; display: flex; align-items: center; border: 1px solid #333; }
-        .input-group input { background: none; border: none; color: white; margin-left: 10px; outline: none; width: 100%; }
-        nav { background: var(--nav); height: 55px; border-bottom: 1px solid #2a2a2a; display: flex; align-items: center; justify-content: space-between; padding: 0 40px; }
-        .tab { padding: 10px 15px; cursor: pointer; color: var(--sub); border-radius: 6px; font-size: 0.9rem; }
-        .tab.active { background: #252525; color: #fff; }
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; padding: 20px; }
-        .panel { background: var(--panel); border: 1px solid #2a2a2a; border-radius: 10px; padding: 15px; }
-        .btn-blue { background: var(--blue); color: white; border: none; padding: 12px; border-radius: 6px; font-weight: bold; cursor: pointer; width: 100%; }
-        #canvas-container { width: 100vw; height: 100vh; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); gap: 20px; padding: 20px; }
     </style>
 </head>
-<body onload="initApp()">
+<body onload="initHub()">
 
-    <div id="auth-view" class="view active">
-        <div class="auth-background">
-            <div class="login-card">
-                <h2 style="color:var(--green)">BLOKIE</h2>
-                <div class="input-group"><i class="fas fa-user"></i><input type="text" id="u-in" placeholder="Username"></div>
-                <div class="input-group"><i class="fas fa-key"></i><input type="password" id="p-in" placeholder="Password"></div>
-                <button class="btn-blue" onclick="handleLogin()">LOGIN & INSTALL</button>
-            </div>
+    <nav>
+        <div class="nav-tabs">
+            <b style="color:var(--green); font-size: 1.4rem; margin-right: 20px;">BLOKIE</b>
+            <div class="tab active" onclick="showView('worlds')">Games</div>
+            <div class="tab" onclick="showView('players')">Players</div>
+            <div class="tab" onclick="window.open('studio.html', '_blank')">Studio</div>
         </div>
+    </nav>
+
+    <div id="worlds" class="view active">
+        <h2 style="padding: 20px 50px;">Featured Games</h2>
+        <div class="grid" id="games-list"></div>
     </div>
 
-    <div id="home-view" class="view">
-        <nav>
-            <div style="display:flex; gap:10px; align-items:center;">
-                <b style="color:var(--green); margin-right:15px;">BLOKIE</b>
-                <div class="tab active" onclick="switchTab(this, 'worlds')">Worlds</div>
-                <div class="tab" onclick="switchTab(this, 'players')">Players</div>
-                <div class="tab" onclick="window.open('studio.html', '_blank')">Studio</div>
+    <div id="game-menu" class="view">
+        <div class="game-header">
+            <button class="play-btn-large" onclick="launchGame()"><i class="fas fa-play"></i></button>
+        </div>
+        <div class="game-container">
+            <div class="info-panel">
+                <h2 id="menu-title">Game Title</h2>
+                <p id="menu-desc" style="color:var(--sub)">Quickly, run around in circles! Your life depends on it!</p>
+                <hr style="border:0; border-top:1px solid #333; margin: 20px 0;">
+                <div style="color:var(--sub); font-size: 0.9rem;">
+                    <b>Maps:</b> Happy Home, Sunny Ranch, Sky Tower
+                </div>
             </div>
-            <div style="color:var(--gold); font-weight:bold;"><span id="bal">100</span> Bloks</div>
-        </nav>
-        <div id="worlds" class="tab-content active"><div class="grid" id="games-list"></div></div>
-        <div id="players" class="tab-content" style="display:none; padding:20px;">
-            <div style="display:grid; grid-template-columns: 1fr 300px; gap:20px;">
-                <div class="panel"><h3>Search Users</h3><div id="global-list"></div></div>
-                <div class="panel"><h3>BlokBuddies</h3><div id="buddy-list"></div></div>
+            <div class="screenshot-panel">
+                <img id="menu-thumb" class="screenshot-img" src="">
             </div>
         </div>
+        <center><button onclick="showView('worlds')" style="background:none; border:none; color:var(--sub); cursor:pointer;">Back to Discovery</button></center>
     </div>
 
-    <div id="game-view" class="view">
+    <div id="engine-view" class="view">
         <div id="canvas-container"></div>
-        <button onclick="location.reload()" style="position:absolute; top:20px; left:20px; background:rgba(0,0,0,0.8); color:white; border:none; padding:10px; border-radius:5px; cursor:pointer;">EXIT</button>
+        <button onclick="location.reload()" style="position:absolute; top:20px; left:20px; z-index:100; background:rgba(0,0,0,0.7); color:white; border:none; padding:10px 20px; border-radius:5px; cursor:pointer;">Leave</button>
     </div>
 
     <script>
-        let currentUser = null;
-        let users = JSON.parse(localStorage.getItem('blokie_db')) || [];
-        let deferredPrompt;
+        let selectedGame = null;
 
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
-
-        function initApp() { 
-            if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-            refreshGames(); 
-        }
-
-        async function handleLogin() {
-            const name = document.getElementById('u-in').value || "Guest";
-            currentUser = users.find(u => u.user === name) || { user: name, buddies: [], bloks: 100 };
-            if (!users.find(u => u.user === name)) users.push(currentUser);
-            localStorage.setItem('blokie_db', JSON.stringify(users));
-            
-            if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
-            
-            document.getElementById('auth-view').style.display = 'none';
-            document.getElementById('home-view').classList.add('active');
-            document.getElementById('bal').innerText = currentUser.bloks;
-            renderPlayers();
-        }
-
-        function switchTab(el, id) {
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
-            document.querySelectorAll('.tab-content').forEach(c => c.style.display = 'none');
-            el.classList.add('active'); document.getElementById(id).style.display = 'block';
-        }
-
-        function renderPlayers() {
-            const gList = document.getElementById('global-list');
-            gList.innerHTML = "";
-            users.forEach(u => {
-                if(u.user !== currentUser.user) {
-                    const isBuddy = currentUser.buddies.includes(u.user);
-                    const d = document.createElement('div');
-                    d.style = "display:flex; justify-content:space-between; padding:10px; border-bottom:1px solid #333;";
-                    d.innerHTML = `<span>${u.user}</span><button onclick="addBuddy('${u.user}')" style="background:var(--blue); color:white; border:none; padding:5px; border-radius:4px;">${isBuddy?'Buddies':'Add'}</button>`;
-                    gList.appendChild(d);
-                }
-            });
-            const bList = document.getElementById('buddy-list');
-            bList.innerHTML = currentUser.buddies.length ? "" : "Add some buddies!";
-            currentUser.buddies.forEach(b => { bList.innerHTML += `<div>⭐ ${b}</div>`; });
-        }
-
-        function addBuddy(name) {
-            if(!currentUser.buddies.includes(name)) currentUser.buddies.push(name);
-            localStorage.setItem('blokie_db', JSON.stringify(users));
-            renderPlayers();
-        }
-
-        function refreshGames() {
+        function initHub() {
             const list = document.getElementById('games-list');
-            const games = JSON.parse(localStorage.getItem('blokie_published_games')) || [];
-            list.innerHTML = games.length ? "" : "No games published yet.";
+            const games = JSON.parse(localStorage.getItem('blokie_games')) || [];
+            list.innerHTML = "";
             games.forEach((g, i) => {
-                const d = document.createElement('div'); d.className="panel";
-                d.innerHTML = `<img src="${g.thumb}" style="width:100%; height:120px; object-fit:cover; border-radius:5px;"><b>${g.name}</b><button onclick="joinGame(${i})" style="width:100%; background:var(--green); border:none; color:white; padding:8px; margin-top:10px; border-radius:4px; font-weight:bold; cursor:pointer;">PLAY</button>`;
+                const d = document.createElement('div');
+                d.className = "info-panel";
+                d.style.cursor = "pointer";
+                d.innerHTML = `<img src="${g.thumb}" style="width:100%; height:150px; border-radius:8px; object-fit:cover;"><h3>${g.name}</h3>`;
+                d.onclick = () => openGameMenu(g);
                 list.appendChild(d);
             });
         }
 
-        function joinGame(idx) {
-            const game = JSON.parse(localStorage.getItem('blokie_published_games'))[idx];
-            document.getElementById('home-view').style.display = 'none';
-            document.getElementById('game-view').classList.add('active');
+        function showView(id) {
+            document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        function openGameMenu(game) {
+            selectedGame = game;
+            document.getElementById('menu-title').innerText = game.name;
+            document.getElementById('menu-thumb').src = game.thumb;
+            showView('game-view'); // This refers to the layout view
+            document.getElementById('game-menu').classList.add('active');
+        }
+
+        function launchGame() {
+            showView('engine-view');
             const scene = new THREE.Scene(); scene.background = new THREE.Color(0x87ceeb);
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
             const renderer = new THREE.WebGLRenderer({antialias:true});
             renderer.setSize(window.innerWidth, window.innerHeight);
             document.getElementById('canvas-container').appendChild(renderer.domElement);
+            
             scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-            game.blocks.forEach(b => {
-                const mesh = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshStandardMaterial({color:b.col}));
-                mesh.position.set(b.pos.x, b.pos.y, b.pos.z); scene.add(mesh);
+            selectedGame.blocks.forEach(b => {
+                const m = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshStandardMaterial({color:b.col}));
+                m.position.set(b.pos.x, b.pos.y, b.pos.z); scene.add(m);
             });
-            const p = new THREE.Mesh(new THREE.BoxGeometry(1,2,0.5), new THREE.MeshStandardMaterial({color:0x3498db}));
-            p.position.y = 1; scene.add(p);
-            camera.position.set(0, 5, 10);
-            function anim() { requestAnimationFrame(anim); camera.position.lerp(new THREE.Vector3(p.position.x, p.position.y+5, p.position.z+10), 0.1); camera.lookAt(p.position); renderer.render(scene, camera); }
+            
+            camera.position.set(0, 10, 20); camera.lookAt(0,0,0);
+            function anim() { requestAnimationFrame(anim); renderer.render(scene, camera); }
             anim();
         }
     </script>
