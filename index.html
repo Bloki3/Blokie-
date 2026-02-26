@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blokie - Hub</title>
+    <title>Blokie - Creative OS</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
@@ -18,103 +18,129 @@
         .view { display: none; height: 100%; width: 100%; overflow-y: auto; }
         .view.active { display: block; }
 
-        /* Navigation */
-        nav { background: var(--bg-nav); height: 55px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; padding: 0 40px; }
-        .nav-tabs { display: flex; gap: 5px; height: 100%; align-items: center; }
-        .tab { display: flex; align-items: center; gap: 8px; padding: 0 15px; height: 40px; color: var(--text-sub); font-size: 0.9rem; cursor: pointer; border-radius: 6px; }
-        .tab.active { background: #252525; color: white; }
-
-        /* Modern Game Menu UI */
-        .game-header-banner { width: 100%; height: 180px; background: linear-gradient(to bottom, rgba(0,0,0,0), var(--bg-dark)), #1a1a1a; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 20px; border-bottom: 1px solid var(--border); }
-        .play-btn-large { background: var(--accent-green); width: 450px; height: 50px; border: none; border-radius: 8px; color: white; font-size: 1.5rem; cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; }
-        .play-btn-large:hover { transform: scale(1.02); filter: brightness(1.1); }
+        /* --- AUTH: SPLIT SCREEN SIGN UP --- */
+        .auth-container { display: flex; height: 100vh; width: 100vw; background: #050505; }
+        .auth-left { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; background: linear-gradient(135deg, #002b11 0%, #000000 100%); position: relative; }
+        .auth-right { flex: 1; background: linear-gradient(135deg, #000000 0%, #00122b 100%); display: flex; align-items: center; justify-content: center; border-left: 1px solid var(--border); }
         
-        .game-container-modern { max-width: 1100px; margin: 30px auto; display: grid; grid-template-columns: 1.2fr 1fr; gap: 25px; padding: 0 20px; }
-        .modern-panel { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; }
-        .panel-header { background: rgba(255,255,255,0.03); padding: 12px 20px; border-bottom: 1px solid var(--border); font-weight: bold; font-size: 0.9rem; }
-        .panel-body { padding: 20px; line-height: 1.6; }
-        .media-panel img { width: 100%; height: 350px; object-fit: cover; }
+        .sign-up-box { background: rgba(30, 30, 30, 0.9); padding: 40px; border-radius: 8px; width: 320px; border: 1px solid #444; text-align: left; }
+        .sign-up-box h2 { text-align: center; margin-bottom: 20px; font-weight: 300; }
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 0.8rem; margin-bottom: 5px; text-align: right; color: var(--text-sub); }
+        .form-group input { width: 100%; padding: 10px; background: #111; border: 1px solid #444; color: white; border-radius: 4px; box-sizing: border-box; }
+        
+        .btn-signup { width: 100%; padding: 12px; background: #004d1a; color: white; border: none; border-radius: 4px; cursor: pointer; font-weight: bold; margin-top: 10px; }
 
-        /* Grid */
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 20px; margin-top: 20px; }
-        .panel { background: var(--bg-panel); border: 1px solid var(--border); border-radius: 10px; padding: 15px; }
+        /* --- NAV: TOP BAR ICON STYLE --- */
+        nav { background: #000; height: 50px; border-bottom: 1px solid #444; display: flex; align-items: center; padding: 0 20px; justify-content: space-between; }
+        .nav-links { display: flex; gap: 15px; align-items: center; }
+        .nav-item { color: white; text-decoration: none; font-size: 0.9rem; cursor: pointer; display: flex; align-items: center; gap: 5px; }
+        .nav-item:hover { text-decoration: underline; }
 
-        #canvas-container { width: 100vw; height: 100vh; background: #000; }
+        /* --- GAME MENU: POLYTORIA STYLE --- */
+        .game-header-banner { width: 100%; height: 160px; background: #1a1a1a; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid var(--border); }
+        .btn-play-poly { background: var(--accent-green); width: 380px; height: 45px; border: none; border-radius: 4px; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+        
+        .poly-container { max-width: 1000px; margin: 30px auto; display: grid; grid-template-columns: 1fr 450px; gap: 20px; padding: 0 20px; }
+        .about-panel { background: #1b1b1b; border-radius: 8px; border: 1px solid #333; overflow: hidden; }
+        .about-header { padding: 10px 15px; background: #111; border-bottom: 1px solid #333; font-size: 0.85rem; display: flex; align-items: center; gap: 8px; }
+        .about-body { padding: 20px; font-size: 0.9rem; line-height: 1.5; color: #ddd; }
+        
+        .media-panel img { width: 100%; border-radius: 8px; border: 1px solid #333; height: 300px; object-fit: cover; }
+
+        .card { background: #1b1b1b; border: 1px solid #333; border-radius: 4px; width: 150px; padding: 10px; text-align: center; cursor: pointer; }
+        .card img { width: 100%; height: 100px; background: #800; border-radius: 4px; }
     </style>
 </head>
 <body onload="initApp()">
 
     <div id="auth-view" class="view active">
-        <div style="height:100vh; display:flex; justify-content:center; align-items:center; background: #050505;">
-            <div style="text-align:center; width:320px; padding:40px; background:var(--bg-panel); border:1px solid var(--border); border-radius:12px;">
-                <h2 style="color:var(--accent-green); letter-spacing:4px;">BLOKIE</h2>
-                <input type="text" id="u-in" placeholder="Username" style="width:100%; padding:12px; margin: 15px 0; background:#000; border:1px solid #333; color:white; border-radius:6px;">
-                <button class="play-btn-large" style="width:100%; font-size:1rem;" onclick="handleLogin()">LOGIN & INSTALL</button>
+        <div class="auth-container">
+            <div class="auth-left">
+                <h1 style="font-size: 3.5rem; margin: 0;">Sign Up!</h1>
+                <p style="color: var(--text-sub); font-size: 0.7rem;">By signing up, you agree to the terms of service and policy.</p>
+            </div>
+            <div class="auth-right">
+                <div class="sign-up-box">
+                    <h2>Sign up</h2>
+                    <div class="form-group">
+                        <label>Username</label>
+                        <input type="text" id="u-in">
+                    </div>
+                    <div class="form-group">
+                        <label>Password</label>
+                        <input type="password" id="p-in">
+                    </div>
+                    <button class="btn-signup" onclick="handleLogin()">Sign Up!</button>
+                    <p style="font-size: 0.6rem; text-align: center; margin-top: 10px; color: var(--text-sub);">Already have an account? <span style="color:var(--accent-blue); cursor:pointer;">Log in</span></p>
+                </div>
             </div>
         </div>
     </div>
 
     <div id="home-view" class="view">
         <nav>
-            <div class="nav-tabs">
-                <div style="font-weight:900; color:var(--accent-green); margin-right:20px;">BLOKIE</div>
-                <div class="tab active" onclick="showTab('worlds')"><i class="fas fa-globe"></i> Worlds</div>
-                <div class="tab" onclick="showTab('avatar')"><i class="fas fa-user"></i> Avatar</div>
-                <div class="tab" onclick="window.open('studio.html', '_blank')"><i class="fas fa-hammer"></i> Studio</div>
+            <div class="nav-links">
+                <div style="font-weight:bold; font-size:1.1rem; border-right: 1px solid #444; padding-right:15px;">Blokie</div>
+                <a class="nav-item" onclick="showTab('worlds')">Worlds <i class="fas fa-globe-americas"></i></a>
+                <a class="nav-item">People <i class="fas fa-users"></i></a>
+                <a class="nav-item" onclick="showTab('avatar')">Avatar <i class="fas fa-user-circle"></i></a>
+                <a class="nav-item" onclick="window.open('studio.html', '_blank')">Install Studio! <i class="fas fa-hammer"></i></a>
             </div>
+            <div class="nav-item">Ty All!</div>
         </nav>
 
-        <div id="worlds" class="tab-content" style="max-width:1200px; margin:30px auto; padding:0 20px;">
-            <h2>Featured Worlds</h2>
-            <div class="grid" id="games-list"></div>
+        <div id="worlds" class="tab-content" style="padding: 40px;">
+            <h1 style="font-weight: 300;">Welcome, <span id="user-display">{USER}</span>!</h1>
+            <hr style="border:0; border-top:1px solid #444; margin: 20px 0;">
+            <h2 style="font-weight: 300;">Featured ></h2>
+            <div id="games-list" style="display:flex; gap:20px; flex-wrap:wrap;"></div>
         </div>
 
         <div id="game-menu" class="tab-content" style="display:none;">
             <div class="game-header-banner">
-                <button class="play-btn-large" onclick="launchGame()"><i class="fas fa-play"></i></button>
+                <button class="btn-play-poly" onclick="launchGame()">
+                    <i class="fas fa-play" style="color:white; font-size:1.5rem;"></i>
+                </button>
             </div>
-            <div class="game-container-modern">
-                <div class="modern-panel">
-                    <div class="panel-header"><i class="fas fa-info-circle"></i> About</div>
-                    <div class="panel-body">
-                        <p id="m-desc" style="font-weight:600;">Quickly, run around in circles! Your life depends on it!</p>
-                        <p style="color:var(--text-sub); font-size:0.85rem;">Credits to Blokie Universe for engine.</p>
-                        <p style="color:var(--accent-blue); font-weight:bold; margin-top:20px;">[MAPS]:</p>
-                        <ul style="color:var(--text-sub); font-size:0.9rem;"><li>Happy Home</li><li>Sunny Ranch</li><li>Sky Tower</li></ul>
+            <div class="poly-container">
+                <div class="about-panel">
+                    <div class="about-header"><i class="fas fa-info-circle"></i> About</div>
+                    <div class="about-body">
+                        <p id="m-desc">Quickly, run around in circles! Your life depends on it!<br>Credits to Stickmasterluke for original game</p>
+                        <p style="font-size: 0.8rem; margin-top:20px;">Game still in testing, here's the content available right now.<br><b>[MAPS] :</b></p>
+                        <ul style="font-size: 0.8rem; color: var(--text-sub);">
+                            <li>Happy Home</li>
+                            <li>Sunny Ranch</li>
+                            <li>Sky Tower</li>
+                        </ul>
                     </div>
                 </div>
-                <div class="modern-panel media-panel"><img id="m-thumb" src=""></div>
+                <div class="media-panel">
+                    <img id="m-thumb" src="https://placehold.co/600x400/800/white?text=Failed+to+load+img!">
+                </div>
             </div>
-            <center><button onclick="showTab('worlds')" style="background:none; border:none; color:var(--text-sub); cursor:pointer;">← Back to Discovery</button></center>
-        </div>
-
-        <div id="avatar" class="tab-content" style="max-width:1200px; margin:30px auto; padding:0 20px;">
-            <h2>Avatar Editor</h2>
-            <div class="panel" style="max-width:300px;">
-                <p>Shirt Color</p>
-                <input type="color" id="shirt-color" value="#3498db" style="width:100%; height:40px; cursor:pointer; border:none; background:none;">
-            </div>
+            <center><button onclick="showTab('worlds')" style="background:none; border:none; color:var(--text-sub); cursor:pointer; margin-top:20px;">← Back to Discovery</button></center>
         </div>
     </div>
 
     <div id="game-view" class="view">
         <div id="canvas-container"></div>
-        <button onclick="location.reload()" style="position:absolute; top:20px; left:20px; background:rgba(0,0,0,0.7); color:white; border:none; padding:12px 20px; cursor:pointer; border-radius:8px; font-weight:bold;">EXIT TO HUB</button>
+        <button onclick="location.reload()" style="position:absolute; top:20px; left:20px; background:rgba(0,0,0,0.8); color:white; border:none; padding:10px 20px; cursor:pointer; border-radius:4px;">LEAVE GAME</button>
     </div>
 
     <script>
-        let deferredPrompt;
         let selectedGame = null;
         let keys = {};
 
-        window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
         window.addEventListener('keydown', e => keys[e.code] = true);
         window.addEventListener('keyup', e => keys[e.code] = false);
 
-        function initApp() { refreshGames(); if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js'); }
+        function initApp() { refreshGames(); }
 
         function handleLogin() {
-            if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
+            const user = document.getElementById('u-in').value || "Guest";
+            document.getElementById('user-display').innerText = user;
             document.getElementById('auth-view').classList.remove('active');
             document.getElementById('home-view').classList.add('active');
         }
@@ -127,12 +153,13 @@
         function refreshGames() {
             const list = document.getElementById('games-list');
             const published = JSON.parse(localStorage.getItem('blokie_published_games')) || [];
-            list.innerHTML = published.length ? "" : "<p style='color:var(--text-sub)'>No worlds found.</p>";
+            list.innerHTML = published.length ? "" : `<div class="card"><img><p>Name</p><button class="btn-play-poly" style="width:100%; height:25px; font-size:0.7rem;">Play</button></div>`;
+            
             published.forEach((game, i) => {
-                const div = document.createElement('div'); div.className = "panel";
-                div.innerHTML = `<img src="${game.thumb}" style="width:100%; height:130px; object-fit:cover; border-radius:6px; cursor:pointer;">
-                                 <p style="margin:10px 0;"><b>${game.name}</b></p>
-                                 <button class="play-btn-large" style="width:100%; height:35px; font-size:0.9rem;" onclick="openMenu(${i})">VIEW</button>`;
+                const div = document.createElement('div');
+                div.className = "card";
+                div.innerHTML = `<img src="${game.thumb}"><b>${game.name}</b><br>
+                                 <button class="btn-play-poly" style="width:100%; height:25px; font-size:0.7rem; margin-top:5px;" onclick="openMenu(${i})">Play</button>`;
                 list.appendChild(div);
             });
         }
@@ -141,7 +168,7 @@
             const games = JSON.parse(localStorage.getItem('blokie_published_games'));
             selectedGame = games[index];
             showTab('game-menu');
-            document.getElementById('m-thumb').src = selectedGame.thumb;
+            if(selectedGame.thumb) document.getElementById('m-thumb').src = selectedGame.thumb;
         }
 
         function launchGame() {
@@ -155,18 +182,15 @@
             document.getElementById('canvas-container').appendChild(renderer.domElement);
 
             scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-            const sun = new THREE.DirectionalLight(0xffffff, 0.5); sun.position.set(10,20,10); scene.add(sun);
-
             selectedGame.blocks.forEach(b => {
                 const block = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshStandardMaterial({color: b.col}));
                 block.position.set(b.pos.x, b.pos.y, b.pos.z); scene.add(block);
             });
 
-            // Player with Physics
-            const player = new THREE.Mesh(new THREE.BoxGeometry(0.8, 2, 0.5), new THREE.MeshStandardMaterial({color: document.getElementById('shirt-color').value}));
+            const player = new THREE.Mesh(new THREE.BoxGeometry(0.8, 2, 0.5), new THREE.MeshStandardMaterial({color: 0x3498db}));
             player.position.y = 5; scene.add(player);
 
-            let velocityY = 0;
+            let vy = 0;
             function animate() {
                 requestAnimationFrame(animate);
                 const speed = 0.15;
@@ -174,12 +198,10 @@
                 if(keys['KeyS']) player.position.z += speed;
                 if(keys['KeyA']) player.position.x -= speed;
                 if(keys['KeyD']) player.position.x += speed;
-                if(keys['Space'] && player.position.y <= 1.05) velocityY = 0.2; // Jump
+                if(keys['Space'] && player.position.y <= 1.05) vy = 0.2;
 
-                // Gravity logic
-                player.position.y += velocityY;
-                if(player.position.y > 1) velocityY -= 0.01; 
-                else { player.position.y = 1; velocityY = 0; }
+                player.position.y += vy;
+                if(player.position.y > 1) vy -= 0.01; else { player.position.y = 1; vy = 0; }
 
                 camera.position.lerp(new THREE.Vector3(player.position.x, player.position.y + 6, player.position.z + 10), 0.1);
                 camera.lookAt(player.position);
