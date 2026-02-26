@@ -1,5 +1,5 @@
 {
-  "name": "Blokie Enterprise",
+  "name": "Blokie Ltd",
   "short_name": "Blokie",
   "start_url": "index.html",
   "display": "standalone",
@@ -14,3 +14,4 @@
     }
   ]
 }
+
