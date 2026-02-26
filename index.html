@@ -3,50 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Blokie - Creative Universe</title>
+    <title>Blokie - Corporate Edition</title>
     <link rel="manifest" href="manifest.json">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
     <style>
-        :root { --bg: #0c0c0c; --nav: #1b1b1b; --panel: #141414; --text: #fff; --sub: #b0b0b0; --green: #2ecc71; --blue: #3498db; --border: #333; }
-        body, html { margin: 0; padding: 0; font-family: 'Segoe UI', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; height: 100%; }
+        :root { --bg: #0c0c0c; --nav: #1b1b1b; --panel: #141414; --text: #fff; --sub: #b0b0b0; --green: #2ecc71; --blue: #34495e; --border: #333; }
+        body, html { margin: 0; padding: 0; font-family: 'Inter', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; height: 100%; }
         
-        .view { display: none; height: 100%; }
-        .view.active { display: block; }
-
-        /* Auth/Cathedral Style */
-        .auth-background { height: 100vh; background: linear-gradient(rgba(0,0,0,0.8), rgba(0,0,0,0.8)), url('https://placehold.co/1920x1080/111/222?text=The+Cathedral'); background-size: cover; display: flex; justify-content: flex-end; align-items: center; padding-right: 10%; }
-        .login-card { background: rgba(20, 20, 20, 0.98); padding: 40px; border-radius: 12px; width: 340px; border: 1px solid #333; text-align: center; }
-
-        /* Nav */
+        /* Corporate Nav */
         nav { background: var(--nav); height: 60px; display: flex; align-items: center; justify-content: space-between; padding: 0 50px; border-bottom: 1px solid var(--border); }
-        .nav-tabs { display: flex; gap: 15px; }
-        .tab { color: var(--sub); cursor: pointer; padding: 10px 15px; border-radius: 5px; font-weight: 500; }
-        .tab.active { color: #fff; background: #252525; }
+        .nav-tabs { display: flex; gap: 20px; }
+        .tab { color: var(--sub); cursor: pointer; padding: 10px 15px; border-radius: 4px; font-weight: 600; text-transform: uppercase; font-size: 0.8rem; letter-spacing: 1px; }
+        .tab.active { color: #fff; border-bottom: 2px solid var(--green); border-radius: 0; }
 
-        /* Game Menu Layout */
-        .game-header { width: 100%; height: 200px; background: #111; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid #333; }
-        .play-btn-large { background: var(--green); width: 350px; height: 55px; border: none; border-radius: 8px; color: white; font-size: 1.4rem; font-weight: bold; cursor: pointer; transition: 0.2s; }
-        .play-btn-large:hover { transform: scale(1.03); filter: brightness(1.1); }
-        
+        /* Modern Game Menu */
+        .game-header { width: 100%; height: 220px; background: #111; display: flex; justify-content: center; align-items: center; border-bottom: 1px solid #333; }
+        .play-btn-corp { background: var(--green); width: 300px; height: 50px; border: none; color: white; font-size: 1rem; font-weight: bold; cursor: pointer; letter-spacing: 2px; }
         .game-grid { display: grid; grid-template-columns: 1.2fr 1fr; gap: 20px; max-width: 1100px; margin: 20px auto; padding: 20px; }
-        .panel { background: var(--panel); border: 1px solid var(--border); border-radius: 12px; padding: 25px; }
+        .panel { background: var(--panel); border: 1px solid var(--border); padding: 25px; }
         
-        /* Grid for Discovery */
-        .discovery-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 20px; padding: 40px; }
-
+        .view { display: none; }
+        .view.active { display: block; }
         #canvas-container { width: 100vw; height: 100vh; }
     </style>
 </head>
 <body onload="initApp()">
 
     <div id="auth-view" class="view active">
-        <div class="auth-background">
-            <div class="login-card">
-                <h1 style="color:var(--green); letter-spacing: 2px;">BLOKIE</h1>
-                <p style="color:var(--sub); font-size: 0.8rem; margin-bottom: 20px;">Enter the Cathedral</p>
-                <input type="text" id="u-in" placeholder="Username" style="width:100%; padding:12px; margin: 10px 0; background:#222; border:1px solid #444; color:white; border-radius: 6px; box-sizing: border-box;">
-                <button class="play-btn-large" style="width:100%; font-size: 1rem;" onclick="handleLogin()">LOGIN & INSTALL</button>
+        <div style="height:100vh; display:flex; justify-content:center; align-items:center; background:#050505;">
+            <div style="text-align:center; width:300px; padding:40px; background:var(--panel); border:1px solid var(--border);">
+                <img src="icon.png" style="width:60px; margin-bottom:20px;">
+                <h2 style="letter-spacing:4px; margin:0;">BLOKIE</h2>
+                <p style="color:var(--sub); font-size:0.7rem; margin-bottom:30px;">ENTERPRISE CREATIVE SUITE</p>
+                <input type="text" id="u-in" placeholder="USERNAME" style="width:100%; padding:12px; background:#222; border:1px solid #444; color:white; margin-bottom:15px;">
+                <button class="play-btn-corp" style="width:100%;" onclick="handleLogin()">ACCESS & INSTALL</button>
             </div>
         </div>
     </div>
@@ -54,148 +45,109 @@
     <div id="hub-view" class="view">
         <nav>
             <div class="nav-tabs">
-                <b style="color:var(--green); font-size: 1.2rem; margin-right: 15px;">BLOKIE</b>
-                <div class="tab active" onclick="switchMainTab('worlds')">Games</div>
-                <div class="tab" onclick="switchMainTab('avatar-tab')">Avatar</div>
+                <div class="tab active" onclick="switchTab('worlds')">Discovery</div>
+                <div class="tab" onclick="switchTab('avatar-tab')">Appearance</div>
                 <div class="tab" onclick="window.open('studio.html', '_blank')">Studio</div>
             </div>
-            <div id="user-display" style="color:var(--sub); font-size: 0.9rem;"></div>
         </nav>
 
-        <div id="worlds" class="tab-content">
-            <h2 style="margin-left: 40px; margin-top: 30px;">Discover Worlds</h2>
-            <div class="discovery-grid" id="featured-list"></div>
+        <div id="worlds" class="tab-content" style="padding:40px;">
+            <div id="featured-list" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(280px, 1fr)); gap:20px;"></div>
         </div>
 
         <div id="game-menu" class="tab-content" style="display:none;">
-            <div class="game-header"><button class="play-btn-large" onclick="launchGame()"><i class="fas fa-play"></i> PLAY</button></div>
+            <div class="game-header"><button class="play-btn-corp" onclick="launchGame()">INITIALIZE SESSION</button></div>
             <div class="game-grid">
                 <div class="panel">
-                    <h2 id="m-title" style="margin-top:0;">Game Title</h2>
-                    <p id="m-desc" style="color:var(--sub); line-height: 1.6;">Quickly, run around in circles! Your life depends on it! Explore maps like Happy Home, Sunny Ranch, and Sky Tower.</p>
+                    <h1 id="m-title" style="margin-top:0;">Project Name</h1>
+                    <p id="m-desc" style="color:var(--sub); line-height:1.6;">User-generated creative environment. Secure connection established.</p>
                 </div>
-                <div class="panel" style="padding:0; overflow:hidden; min-height: 300px;">
-                    <img id="m-thumb" src="" style="width:100%; height:100%; object-fit:cover;">
-                </div>
+                <div class="panel" style="padding:0; overflow:hidden;"><img id="m-thumb" src="" style="width:100%; height:300px; object-fit:cover;"></div>
             </div>
-            <center><button onclick="switchMainTab('worlds')" style="background:none; border:none; color:var(--sub); cursor:pointer;">← Back to Games</button></center>
         </div>
 
-        <div id="avatar-tab" class="tab-content" style="display:none; padding: 40px;">
+        <div id="avatar-tab" class="tab-content" style="display:none; padding:40px;">
             <div class="game-grid">
                 <div class="panel">
-                    <h2>Customizer</h2>
-                    <label>Shirt Color</label>
-                    <input type="color" id="char-shirt" value="#3498db" style="width:100%; height:40px; margin: 10px 0; border:none; cursor:pointer;">
-                    <label>Skin Tone</label>
-                    <input type="color" id="char-skin" value="#ffdbac" style="width:100%; height:40px; margin: 10px 0; border:none; cursor:pointer;">
-                    <button class="play-btn-large" style="width:100%; margin-top: 20px;" onclick="saveAvatar()">SAVE LOOK</button>
+                    <h3>IDENTITY CONFIGURATION</h3>
+                    <p>Primary Color (Suit)</p>
+                    <input type="color" id="char-shirt" value="#34495e" style="width:100%; height:40px; border:none; cursor:pointer;">
+                    <p>Secondary Color (Base)</p>
+                    <input type="color" id="char-skin" value="#ecf0f1" style="width:100%; height:40px; border:none; cursor:pointer;">
+                    <button class="play-btn-corp" style="width:100%; margin-top:20px;" onclick="saveLook()">APPLY CHANGES</button>
                 </div>
-                <div class="panel" style="display:flex; align-items:center; justify-content:center; background:#000;">
-                    <div style="text-align:center;">
-                        <div id="preview-head" style="width:60px; height:60px; background:#ffdbac; margin:0 auto; border-radius:4px;"></div>
-                        <div id="preview-body" style="width:100px; height:120px; background:#3498db; margin:5px auto; border-radius:4px;"></div>
+                <div class="panel" style="background:#000; display:flex; justify-content:center; align-items:center;">
+                    <div id="preview-box" style="text-align:center;">
+                        <div id="p-head" style="width:50px; height:50px; background:#ecf0f1; margin:0 auto;"></div>
+                        <div id="p-body" style="width:80px; height:100px; background:#34495e; margin:5px auto;"></div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="engine-view" class="view">
-        <div id="canvas-container"></div>
-        <button onclick="location.reload()" style="position:absolute; top:20px; left:20px; background:rgba(0,0,0,0.8); color:white; border:none; padding:12px 25px; cursor:pointer; font-weight:bold; border-radius:6px; z-index:100;">LEAVE GAME</button>
-    </div>
+    <div id="engine-view" class="view"><div id="canvas-container"></div></div>
 
     <script>
         let deferredPrompt;
-        let currentUser = null;
-        let selectedGame = null;
-        let myLook = { shirt: "#3498db", skin: "#ffdbac" };
+        let myLook = { shirt: "#34495e", skin: "#ecf0f1" };
 
         window.addEventListener('beforeinstallprompt', (e) => { e.preventDefault(); deferredPrompt = e; });
 
-        function initApp() {
-            if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js');
-            loadGames();
-        }
+        function initApp() { if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js'); loadGames(); }
 
-        async function handleLogin() {
-            const name = document.getElementById('u-in').value || "BlokiePlayer";
-            currentUser = { name: name };
-            document.getElementById('user-display').innerText = `Logged in as: ${name}`;
-            
+        function handleLogin() {
             if (deferredPrompt) { deferredPrompt.prompt(); deferredPrompt = null; }
-            
             document.getElementById('auth-view').classList.remove('active');
             document.getElementById('hub-view').classList.add('active');
         }
 
-        function switchMainTab(id) {
+        function switchTab(id) {
             document.querySelectorAll('.tab-content').forEach(t => t.style.display = 'none');
-            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             document.getElementById(id).style.display = 'block';
-            event.currentTarget.classList.add('active');
+        }
+
+        function saveLook() {
+            myLook.shirt = document.getElementById('char-shirt').value;
+            myLook.skin = document.getElementById('char-skin').value;
+            document.getElementById('p-head').style.background = myLook.skin;
+            document.getElementById('p-body').style.background = myLook.shirt;
+            alert("Identity Updated.");
         }
 
         function loadGames() {
             const list = document.getElementById('featured-list');
             const games = JSON.parse(localStorage.getItem('blokie_games')) || [];
-            list.innerHTML = games.length ? "" : "<p style='color:var(--sub)'>The universe is quiet. Use Studio to build!</p>";
-            
+            list.innerHTML = games.length ? "" : "No active projects.";
             games.forEach(g => {
                 const d = document.createElement('div');
-                d.className = "panel";
-                d.style.cursor = "pointer";
-                d.innerHTML = `<img src="${g.thumb}" style="width:100%; height:160px; border-radius:8px; object-fit:cover;"><h3>${g.name}</h3>`;
+                d.className = "panel"; d.style.cursor = "pointer";
+                d.innerHTML = `<img src="${g.thumb}" style="width:100%; height:150px; object-fit:cover; margin-bottom:15px;"><b>${g.name.toUpperCase()}</b>`;
                 d.onclick = () => {
-                    selectedGame = g;
                     document.getElementById('worlds').style.display = 'none';
                     document.getElementById('game-menu').style.display = 'block';
                     document.getElementById('m-title').innerText = g.name;
                     document.getElementById('m-thumb').src = g.thumb;
+                    window.selectedGame = g;
                 };
                 list.appendChild(d);
             });
         }
 
-        function saveAvatar() {
-            myLook.shirt = document.getElementById('char-shirt').value;
-            myLook.skin = document.getElementById('char-skin').value;
-            document.getElementById('preview-head').style.background = myLook.skin;
-            document.getElementById('preview-body').style.background = myLook.shirt;
-            alert("Appearance saved!");
-        }
-
         function launchGame() {
             document.getElementById('hub-view').classList.remove('active');
             document.getElementById('engine-view').classList.add('active');
-            
-            const scene = new THREE.Scene(); scene.background = new THREE.Color(0x87ceeb);
+            const scene = new THREE.Scene(); scene.background = new THREE.Color(0x050505);
             const camera = new THREE.PerspectiveCamera(75, window.innerWidth/window.innerHeight, 0.1, 1000);
-            const renderer = new THREE.WebGLRenderer({ antialias: true });
-            renderer.setSize(window.innerWidth, window.innerHeight);
+            const renderer = new THREE.WebGLRenderer(); renderer.setSize(window.innerWidth, window.innerHeight);
             document.getElementById('canvas-container').appendChild(renderer.domElement);
-            
-            scene.add(new THREE.AmbientLight(0xffffff, 0.8));
-            
-            // Build Level
-            selectedGame.blocks.forEach(b => {
+            scene.add(new THREE.AmbientLight(0xffffff, 0.5));
+            window.selectedGame.blocks.forEach(b => {
                 const m = new THREE.Mesh(new THREE.BoxGeometry(1,1,1), new THREE.MeshStandardMaterial({color:b.col}));
                 m.position.set(b.pos.x, b.pos.y, b.pos.z); scene.add(m);
             });
-
-            // Player Model
-            const group = new THREE.Group();
-            const body = new THREE.Mesh(new THREE.BoxGeometry(1,1.2,0.5), new THREE.MeshStandardMaterial({color: myLook.shirt}));
-            const head = new THREE.Mesh(new THREE.BoxGeometry(0.6,0.6,0.6), new THREE.MeshStandardMaterial({color: myLook.skin}));
-            head.position.y = 0.9;
-            group.add(body); group.add(head);
-            group.position.y = 1; scene.add(group);
-
-            camera.position.set(10, 10, 10); camera.lookAt(group.position);
-            
-            function anim() { requestAnimationFrame(anim); renderer.render(scene, camera); }
-            anim();
+            camera.position.set(10,10,10); camera.lookAt(0,0,0);
+            function anim() { requestAnimationFrame(anim); renderer.render(scene, camera); } anim();
         }
     </script>
 </body>
